@@ -4,6 +4,7 @@ package com.employees.api.rest;
 import com.employees.api.entity.Employee;
 import com.employees.api.service.EmployeeService;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -64,11 +65,21 @@ public class EmployeeRestController {
         }
 
         Employee patchedEmployee = apply(patchPayload, tempEmployee);
+        Employee dbEmployee = employeeService.save(patchedEmployee);
 
-        return null;
+        return dbEmployee;
     }
 
     private Employee apply(Map<String, Object> patchPayload, Employee tempEmployee) {
-        return null;
+        ObjectNode employeeNode = objectMapper.convertValue(tempEmployee, ObjectNode.class);
+        System.out.println("🏢 employeeNode = " + employeeNode);
+
+        ObjectNode patchNode = objectMapper.convertValue(patchPayload, ObjectNode.class);
+        System.out.println("🤿 patchNode = " + patchNode);
+
+        employeeNode.setAll(patchNode);
+
+        Employee patchedEmployee = objectMapper.convertValue(employeeNode, Employee.class);
+        return patchedEmployee;
     }
 }
