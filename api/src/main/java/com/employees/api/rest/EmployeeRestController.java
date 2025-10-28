@@ -3,18 +3,22 @@ package com.employees.api.rest;
 
 import com.employees.api.entity.Employee;
 import com.employees.api.service.EmployeeService;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api")
 public class EmployeeRestController {
 
     private EmployeeService employeeService;
+    private ObjectMapper objectMapper;
 
-    public EmployeeRestController(EmployeeService theEmployeeService) {
+    public EmployeeRestController(EmployeeService theEmployeeService, ObjectMapper theObjectMapper) {
         employeeService = theEmployeeService;
+        objectMapper = theObjectMapper;
     }
 
     @GetMapping("/employees")
@@ -44,5 +48,27 @@ public class EmployeeRestController {
     public Employee updateEmployee(@RequestBody Employee theEmployee) {
         Employee dbEmployee = employeeService.save(theEmployee);
         return dbEmployee;
+    }
+
+    @PatchMapping("/employees/{employeeId}")
+    public Employee patchEmployee(@PathVariable int employeeId, @RequestBody Map<String, Object> patchPayload) {
+        Employee tempEmployee = employeeService.findById(employeeId);
+        System.out.println("🩹 patchPayload = " + patchPayload);
+
+        if (tempEmployee == null) {
+            throw new RuntimeException("🚫 Employee ID not found: " + employeeId);
+        }
+
+        if (patchPayload.containsKey("id")) {
+            throw new RuntimeException("⛔️ Employee ID not allowed in Request Body");
+        }
+
+        Employee patchedEmployee = apply(patchPayload, tempEmployee);
+
+        return null;
+    }
+
+    private Employee apply(Map<String, Object> patchPayload, Employee tempEmployee) {
+        return null;
     }
 }
