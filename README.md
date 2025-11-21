@@ -1,1 +1,1 @@
-Created documentation.
+@GetMapping(/docs)
